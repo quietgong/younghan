@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>한영타 변환기</title>
+</head>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 20px;
+  }
+
+  h1 {
+    font-size: 24px;
+  }
+
+  textarea {
+    width: 100%;
+    height: 100px;
+    margin: 10px 0;
+    padding: 10px;
+  }
+
+  button {
+    padding: 10px 20px;
+    font-size: 16px;
+  }
+
+  #output {
+    margin-top: 20px;
+  }
+</style>
+
+<body>
+  <h1>한영타 변환기</h1>
+  <textarea id="text-input"></textarea>
+  <div id="output"></div>
+  <script src="https://cdn.jsdelivr.net/npm/inko@1.1.1/inko.min.js"></script>
+  <script>
+    function getParameterByName(name) {
+      name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+      var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+      return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+    }
+
+    let inko = new Inko();
+    
+    function convertText(input) {
+      var textInput = document.getElementById("text-input").value;
+      var convertedText = convertToKorean(input);
+      var outputDiv = document.getElementById("output");
+      outputDiv.textContent = "변환된 텍스트: " + convertedText;
+    }
+
+    function convertToKorean(input) {
+      const result = inko.en2ko(input)
+      return result;
+    }
+    const input = getParameterByName('input')
+    convertText(input)
+    const result = convertToKorean(input)
+    var textarea = document.getElementById("text-input");
+    textarea.value = input
+
+
+  </script>
+</body>
+
+</html>
