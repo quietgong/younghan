@@ -4,60 +4,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Web AR Example</title>
-  <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-    }
-
-    #arjs-loader {
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-  </style>
+  <title>AR.js Image Marker</title>
+  <!-- Include A-Frame and AR.js libraries -->
+  <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+  <script src="https://jeromeetienne.github.io/AR.js/aframe/build/aframe-ar.js"></script>
 </head>
 
 <body>
-  <div id="arjs-loader">
-    <img src="marker.jpg">
-  </div>
-  <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-  <script src="https://cdn.rawgit.com/jeromeetienne/AR.js/2.3.2/aframe/build/aframe-ar.js"></script>
-  <script>
-    AFRAME.registerComponent('ar-marker', {
-      init: function () {
-        this.markerFound = false;
-      },
-      tick: function () {
-        if (!this.markerFound) {
-          var marker = this.el;
-          if (marker.object3D.visible) {
-            this.markerFound = true;
-            // Add your content or model here
-            var imageElement = document.getElementById("ar-image");
-            imageElement.style.display = "block";
-          }
-        }
-      }
-    });
-  </script>
-
-  <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
-    <a-marker type="pattern" url="path/to/your/custom/marker.patt" ar-marker>
-      <!-- Add your 3D model or other content here -->
-      <a-box position="0 0.5 0" material="color: red;"></a-box>
+  <a-scene embedded arjs="sourceType: webcam; trackingMethod: best;">
+    <!-- Define the image marker -->
+    <a-marker preset="custom" type="pattern" url="pattern.patt">
+      <!-- Add 3D content to display on the marker -->
+      <a-box position="0 0.5 0" material="color: #4CC3D9;"></a-box>
     </a-marker>
 
+    <!-- Define the camera -->
     <a-entity camera></a-entity>
   </a-scene>
-
-  <!-- Displayed image when the marker is detected -->
-  <div id="ar-image" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-    <img src="image.jpg" style="max-width: 100%; max-height: 100%;">
-  </div>
 </body>
 
 </html>
