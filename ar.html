@@ -23,12 +23,14 @@ Check that gltf is working at https://gltf-viewer.donmccurdy.com/
 
     <!--Hiro Example-->
     <a-marker preset="hiro">
+      <a-entity position="0 0 0" scale="0.02 0.02 0.02" rotation="0 0 0"
+        gltf-model="https://arjs-cors-proxy.herokuapp.com/https://makeademic.github.io/InteractiveMethods/emily_keychain/scene.gltf"></a-entity>
+    </a-marker>
+    
 
       <!--Image Example (must be a .png; the .jpg just shows up as white square, you can also modify width="200" height="100" added after src="" but before>)-->
       <!-- <a-image position="0 0 -2" rotation="-90 0 0" src="https://makeademic.github.io/InteractiveMethods/pattern-images.png"></a-image> </a-marker>-->
       <!--3D Model Example-->
-      <a-entity position="0 0 0" scale="0.02 0.02 0.02" rotation="0 0 0"
-        gltf-model="https://arjs-cors-proxy.herokuapp.com/https://makeademic.github.io/InteractiveMethods/emily_keychain/scene.gltf"></a-entity>
 
       <a-entity camera></a-entity>
   </a-scene>
