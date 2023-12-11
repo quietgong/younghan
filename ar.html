@@ -1,48 +1,35 @@
+<!-- https://ar-js-org.github.io/AR.js-Docs/-->
+<!--Note to self: In order for this code  to work, the following things are required for the gltf-model:
+The entire folder with scene.bin and scene.gltf must be uploaded to GitHub
+The URL must include https
+The URL must start with https://arjs-cors-proxy.herokuapp.com/
+Check that gltf is working at https://gltf-viewer.donmccurdy.com/
+-->
+
 <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+<!-- we import arjs version without NFT but with marker + location based support -->
+<script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
 
-<style>
-  .arjs-loader {
-    height: 100%;
-    width: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    background-color: rgba(0, 0, 0, 0.8);
-    z-index: 9999;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
+<body style="margin : 0px; overflow: hidden;">
+  <a-scene embedded arjs>
+    <!--Pattern Marker Example Use this Marker Generator https://jeromeetienne.github.io/AR.js/three.js/examples/marker-training/examples/generator.html-->
+    <a-marker-camera type='pattern'
+      url='https://makeademic.github.io/InteractiveMethods/pattern-images.patt'></a-marker-camera>
 
-  .arjs-loader div {
-    text-align: center;
-    font-size: 1.25em;
-    color: white;
-  }
-</style>
-
-<!-- rawgithack development URL -->
-<script src='https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js'></script>
-
-<body style='margin : 0px; overflow: hidden;'>
-  <!-- minimal loader shown until image descriptors are loaded -->
-  <div class="arjs-loader">
-    <div>Loading, please wait...</div>
-  </div>
-  <a-scene vr-mode-ui="enabled: false;" renderer="logarithmicDepthBuffer: true;" embedded
-    arjs='trackingMethod: best; sourceType: webcam; debugUIEnabled: false;'>
-
-    <!-- Marker with image marker1.jpg -->
-    <a-marker type='pattern' url='marker1.jpg'>
-      <a-image src="myi.png" width="3" height="3" position="0 0 0.1"></a-image>
+    <!--Text example-->
+    <a-text value="Coastal \n Carolina \n University" color="#006F71" position="0 0 -1" rotation="-90 0 0"></a-text>
     </a-marker>
 
-    <a-marker type='pattern' url='marker2.jpg'>
-      <a-image src="my2.png" width="3" height="3" position="0 0 0.1"></a-image>
-    </a-marker>
 
-    <!-- Add more markers as needed -->
+    <!--Hiro Example-->
+    <a-marker preset="hiro">
 
-    <a-entity camera></a-entity>
+      <!--Image Example (must be a .png; the .jpg just shows up as white square, you can also modify width="200" height="100" added after src="" but before>)-->
+      <!-- <a-image position="0 0 -2" rotation="-90 0 0" src="https://makeademic.github.io/InteractiveMethods/pattern-images.png"></a-image> </a-marker>-->
+      <!--3D Model Example-->
+      <a-entity position="0 0 0" scale="0.02 0.02 0.02" rotation="0 0 0"
+        gltf-model="https://arjs-cors-proxy.herokuapp.com/https://makeademic.github.io/InteractiveMethods/emily_keychain/scene.gltf"></a-entity>
+
+      <a-entity camera></a-entity>
   </a-scene>
 </body>
