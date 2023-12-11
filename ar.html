@@ -22,7 +22,7 @@
 
 <body>
   <div id="arjs-loader">
-    <img src="https://raw.githubusercontent.com/AR-js-org/AR.js/master/data/images/hiro.png">
+    <img src="marker.jpg">
   </div>
   <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
   <script src="https://cdn.rawgit.com/jeromeetienne/AR.js/2.3.2/aframe/build/aframe-ar.js"></script>
@@ -46,7 +46,7 @@
   </script>
 
   <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
-    <a-marker preset="hiro" ar-marker>
+    <a-marker type="pattern" url="path/to/your/custom/marker.patt" ar-marker>
       <!-- Add your 3D model or other content here -->
       <a-box position="0 0.5 0" material="color: red;"></a-box>
     </a-marker>
@@ -54,8 +54,9 @@
     <a-entity camera></a-entity>
   </a-scene>
 
+  <!-- Displayed image when the marker is detected -->
   <div id="ar-image" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-    <img src="image-marker.jpg" style="max-width: 100%; max-height: 100%;">
+    <img src="image.jpg" style="max-width: 100%; max-height: 100%;">
   </div>
 </body>
 
