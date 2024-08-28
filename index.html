@@ -4,28 +4,58 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>암호 해석</title>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <title>Photoism</title>
+  <style>
+    body {
+      background-color: #303030;
+      text-align: center;
+      font-size: 40px;
+      color: #F7F8F8;
+      line-height: 150%;
+    }
+
+    #image {
+      max-width: 100%;
+    }
+
+    #vid {
+      max-width: 80%;
+    }
+
+    #image-container {
+      display: flex;
+      justify-content: center;
+      flex-wrap: nowrap;
+      align-items: center;
+    }
+
+    #image-container a {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #image-container img {
+      max-width: 100%;
+      margin: 10px;
+      box-sizing: border-box;
+    }
+  </style>
 </head>
 
 <body>
-  <div class="container mt-5">
-    <h1 style="text-align: center;">암호 해석</h1>
-
-    <div class="form-group">
-      <textarea class="form-control" id="text-input" rows="5"></textarea>
-    </div>
-    <h5 style="text-align: center;">⬇️</h5>
-    <div class="form-group">
-      <textarea class="form-control" id="output" rows="5"></textarea>
-    </div>
+  <br>
+  <div id="image-container">
+    <a id='btn1' download><img id="btn1_img" src='pic.png'></a>
+    <a id='btn2' download><img id="btn2_img" src='vid.png'></a>
   </div>
-
-  <!-- 부트스트랩 스크립트 추가 -->
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/inko@1.1.1/inko.min.js"></script>
+  <br>
+  <p style="font-size: 18px;"">아이폰은 반드시 사파리로 접속해주세요.</p>
+  <br>
+  <img id='image'>
+  <video id="vid" autoplay muted loop></video>
+  <br>
+  <p style="font-size: 20px;"">12시간동안 다운로드 가능합니다.</p>
   <script>
     function getParameterByName(name) {
       name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
@@ -33,25 +63,21 @@
         results = regex.exec(location.search);
       return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
     }
-    let inko = new Inko();
 
-    function convertText(input) {
-      var textInput = document.getElementById("text-input").value;
-      var convertedText = convertToKorean(input);
-      var outputDiv = document.getElementById("output");
-      outputDiv.textContent = convertedText;
-    }
-
-    function convertToKorean(input) {
-      const result = inko.en2ko(input)
-      return result;
-    }
-    const input = getParameterByName('input')
-    convertText(input)
-    const result = convertToKorean(input)
-    var textarea = document.getElementById("text-input");
-    textarea.value = input
-  </script>
+    const u = getParameterByName('u');
+    const kid = u.split("/")[0];
+    const ymd = u.split("/")[1];
+    const uid = u.split("/")[2];
+    console.log(u, kid, ymd, uid);
+    
+    const baseURL = "https://plinqer-dev.s3.ap-northeast-2.amazonaws.com";
+    const imgURL = `${baseURL}/sample_img.jpeg`;
+    const videoURL = `${baseURL}/sample_vid.mp4`;
+    
+    document.getElementById("btn1").href = imgURL;
+    document.getElementById("btn2").href = videoURL;
+    document.getElementById('image').src = imgURL;
+    document.getElementById('vid').src = videoURL;
   </script>
 </body>
 
