@@ -58,8 +58,8 @@
   <p style="font-size: 20px;"">12시간동안 다운로드 가능합니다.</p>
   <script>
     function blobDownload(type) {
-      const url = id == "pic" ? imgURL : videoURL;
-      const fileName = id == "pic" ? "sample.jpeg" : "sample.mp4";
+      const url = type == "pic" ? imgURL : videoURL;
+      const fileName = type == "pic" ? "sample.jpeg" : "sample.mp4";
 
       fetch(url, { method: 'GET', headers: { "Cache-Control": 'no-cache' } })
         .then(response => response.blob())
