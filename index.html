@@ -46,17 +46,35 @@
 <body>
   <br>
   <div id="image-container">
-    <a id='btn1' download><img id="btn1_img" src='pic.png'></a>
-    <a id='btn2' download><img id="btn2_img" src='vid.png'></a>
+    <a id='btn1' onclick="blobDownload(this.id)"><img id="btn1_img" src='pic.png'></a>
+    <a id='btn2' onclick="blobDownload(this.id)"><img id="btn2_img" src='vid.png'></a>
   </div>
   <br>
   <p style="font-size: 18px;"">아이폰은 반드시 사파리로 접속해주세요.</p>
   <br>
   <img id='image'>
-  <video id="vid" autoplay muted loop></video>
-  <br>
+  <video id=" vid" autoplay muted loop></video>
+    <br>
   <p style="font-size: 20px;"">12시간동안 다운로드 가능합니다.</p>
   <script>
+    function blobDownload(id) {
+      const url = id == "btn1" ? imgURL : videoURL;
+      const fileName = id == "btn1" ? "sample.jpeg" : "sample.mp4";
+      
+      fetch(url).then(response => response.blob())
+        .then(blob => {
+          const link = document.createElement('a');
+          const url = URL.createObjectURL(blob);
+          link.href = url;
+          link.download = fileName;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url); // 메모리 해제
+        })
+        .catch(() => alert('파일 다운로드에 실패했습니다.'));
+    }
+
     function getParameterByName(name) {
       name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
       var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
@@ -69,13 +87,11 @@
     const ymd = u.split("/")[1];
     const uid = u.split("/")[2];
     console.log(u, kid, ymd, uid);
-    
+
     const baseURL = "https://plinqer-dev.s3.ap-northeast-2.amazonaws.com";
     const imgURL = `${baseURL}/sample_img.jpeg`;
     const videoURL = `${baseURL}/sample_vid.mp4`;
-    
-    document.getElementById("btn1").href = imgURL;
-    document.getElementById("btn2").href = videoURL;
+
     document.getElementById('image').src = imgURL;
     document.getElementById('vid').src = videoURL;
   </script>
