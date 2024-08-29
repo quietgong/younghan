@@ -66,12 +66,11 @@
         .then(blob => {
           const link = document.createElement('a');
           const url = URL.createObjectURL(blob);
-          link.href = `${url}?${new Date().getTime()}`;
+          link.href = url;
           link.download = fileName;
           document.body.appendChild(link);
-          console.log(link);
           link.click();
-          // document.body.removeChild(link);
+          document.body.removeChild(link);
           URL.revokeObjectURL(url); // 메모리 해제
         })
         .catch(() => alert('파일 다운로드에 실패했습니다.'));
