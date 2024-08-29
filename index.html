@@ -46,23 +46,23 @@
 <body>
   <br>
   <div id="image-container">
-    <a id='btn1' onclick="blobDownload('btn1')"><img id="btn1_img" src='pic.png'></a>
-    <a id='btn2' onclick="blobDownload('btn2')"><img id="btn2_img" src='vid.png'></a>
+    <a id='btn1' onclick="blobDownload('pic')"><img id="btn1_img" src='pic.png'></a>
+    <a id='btn2' onclick="blobDownload('vid')"><img id="btn2_img" src='vid.png'></a>
   </div>
   <br>
   <p style="font-size: 18px;"">아이폰은 반드시 사파리로 접속해주세요.</p>
   <br>
   <img id='image'>
-  <video id="vid" autoplay muted loop></video>
+  <video id=" vid" autoplay muted loop></video>
     <br>
   <p style="font-size: 20px;"">12시간동안 다운로드 가능합니다.</p>
   <script>
-    function blobDownload(id) {
-      const url = id == "btn1" ? imgURL : videoURL;
-      const fileName = id == "btn1" ? "sample.jpeg" : "sample.mp4";
-      console.log(url, fileName);
-      
-      fetch(url, {method:'GET', headers:{"Cache-Control":'no-cache'}}).then(response => response.blob())
+    function blobDownload(type) {
+      const url = id == "pic" ? imgURL : videoURL;
+      const fileName = id == "pic" ? "sample.jpeg" : "sample.mp4";
+
+      fetch(url, { method: 'GET', headers: { "Cache-Control": 'no-cache' } })
+        .then(response => response.blob())
         .then(blob => {
           const link = document.createElement('a');
           const url = URL.createObjectURL(blob);
