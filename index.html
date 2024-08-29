@@ -46,8 +46,8 @@
 <body>
   <br>
   <div id="image-container">
-    <a id='btn1' onclick="blobDownload(this.id)"><img id="btn1_img" src='pic.png'></a>
-    <a id='btn2' onclick="blobDownload(this.id)"><img id="btn2_img" src='vid.png'></a>
+    <a id='btn1' onclick="blobDownload('btn1')"><img id="btn1_img" src='pic.png'></a>
+    <a id='btn2' onclick="blobDownload('btn2')"><img id="btn2_img" src='vid.png'></a>
   </div>
   <br>
   <p style="font-size: 18px;"">아이폰은 반드시 사파리로 접속해주세요.</p>
@@ -60,6 +60,7 @@
     function blobDownload(id) {
       const url = id == "btn1" ? imgURL : videoURL;
       const fileName = id == "btn1" ? "sample.jpeg" : "sample.mp4";
+      console.log(url, fileName);
       
       fetch(url).then(response => response.blob())
         .then(blob => {
@@ -68,8 +69,9 @@
           link.href = `${url}?${new Date().getTime()}`;
           link.download = fileName;
           document.body.appendChild(link);
+          console.log(link);
           link.click();
-          document.body.removeChild(link);
+          // document.body.removeChild(link);
           URL.revokeObjectURL(url); // 메모리 해제
         })
         .catch(() => alert('파일 다운로드에 실패했습니다.'));
@@ -89,8 +91,8 @@
     console.log(u, kid, ymd, uid);
 
     const baseURL = "https://plinqer-dev.s3.ap-northeast-2.amazonaws.com";
-    const imgURL = `${baseURL}/sample_img.jpeg`;
-    const videoURL = `${baseURL}/sample_vid.mp4`;
+    const imgURL = `${baseURL}/qrImage.jpeg`;
+    const videoURL = `${baseURL}/qrVid.mp4`;
 
     document.getElementById('image').src = imgURL;
     document.getElementById('vid').src = videoURL;
