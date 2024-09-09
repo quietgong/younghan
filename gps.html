@@ -5,8 +5,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>실시간 위치 정보</title>
+  <script src="https://cdn.jsdelivr.net/npm/axios@1.7.7/dist/axios.min.js"></script>
+</head>
+
+<body>
+  <h1>실시간 위치 추적</h1>
+  <p id="location">위치 정보가 여기에 표시됩니다.</p>
   <script>
-    var watchID;
+    let watchID;
+    let userName;
+
+    function getUserName(){
+      userName = prompt("닉네임을 입력하세요");
+    }
 
     function startTracking() {
       if (navigator.geolocation) {
@@ -23,11 +34,18 @@
       }
     }
 
-    function showPosition(position) {
-      var latitude = position.coords.latitude;
-      var longitude = position.coords.longitude;
+    async function showPosition(position) {
+      const data = {
+        "userName": userName,
+        "latitude": position.coords.latitude,
+        "longitude": position.coords.longitude
+      }
       document.getElementById("location").innerHTML =
-        "실시간 위도: " + latitude + "<br>실시간 경도: " + longitude;
+        "실시간 위도: " + data.latitude + "<br>실시간 경도: " + data.longitude;
+      // GPS 
+      const res = await axios.post("http://115.20.193.140:8888/gps", data);
+      console.log(res.data);
+
     }
 
     function showError(error) {
@@ -46,14 +64,10 @@
           break;
       }
     }
-  </script>
-</head>
 
-<body>
-  <h1>실시간 위치 추적</h1>
-  <button onclick="startTracking()">위치 추적 시작</button>
-  <button onclick="stopTracking()">위치 추적 중지</button>
-  <p id="location">위치 정보가 여기에 표시됩니다.</p>
+    getUserName();
+    startTracking();
+  </script>
 </body>
 
 </html>
