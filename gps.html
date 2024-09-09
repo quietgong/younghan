@@ -14,8 +14,10 @@
   <script>
     let watchID;
     let userName;
+    let lastLatitude = null;
+    let lastLongitude = null;
 
-    function getUserName(){
+    function getUserName() {
       userName = prompt("닉네임을 입력하세요");
     }
 
@@ -35,17 +37,33 @@
     }
 
     async function showPosition(position) {
+      const currentLatitude = position.coords.latitude;
+      const currentLongitude = position.coords.longitude;
+
+      // 위도와 경도가 이전 값과 동일한지 확인
+      if (currentLatitude === lastLatitude && currentLongitude === lastLongitude) {
+        return; // 위치 변화가 없으면 API 호출하지 않음
+      }
+
+      // 이전 위치값을 업데이트
+      lastLatitude = currentLatitude;
+      lastLongitude = currentLongitude;
+
       const data = {
         "userName": userName,
-        "latitude": position.coords.latitude,
-        "longitude": position.coords.longitude
+        "latitude": currentLatitude,
+        "longitude": currentLongitude
       }
       document.getElementById("location").innerHTML =
         "실시간 위도: " + data.latitude + "<br>실시간 경도: " + data.longitude;
-      // GPS 
-      const res = await axios.post("http://115.20.193.140:8888/gps", data);
-      console.log(res.data);
 
+      // GPS 정보 서버로 전송
+      try {
+        const res = await axios.post("http://115.20.193.140:8888/gps", data);
+        console.log(res.data);
+      } catch (error) {
+        console.error(error);
+      }
     }
 
     function showError(error) {
