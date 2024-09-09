@@ -7,7 +7,8 @@
   <title>실시간 위치 정보</title>
   <script src="https://cdn.jsdelivr.net/npm/axios@1.7.7/dist/axios.min.js"></script>
   <!-- Google Maps API -->
-  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBr4PpRcc8az-paeV336EDFLpFgkB2FQxQ"></script>
+  <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBr4PpRcc8az-paeV336EDFLpFgkB2FQxQ"></script>
   <style>
     #map {
       height: 400px;
@@ -26,6 +27,7 @@
     let userName;
     let lastLatitude = null;
     let lastLongitude = null;
+    let lastHeading = null;
     let map, marker;
 
     function getUserName() {
@@ -41,10 +43,10 @@
         center: userPosition,
       });
 
+      // 사용자 지정 이미지를 마커로 표시
       const icon = {
         url: "arrow.png", // 원하는 이미지 URL
         scaledSize: new google.maps.Size(50, 50), // 이미지 크기 설정
-        rotation: 0 // 초기 회전각도
       };
 
       marker = new google.maps.Marker({
@@ -58,7 +60,7 @@
     function startTracking() {
       if (navigator.geolocation) {
         watchID = navigator.geolocation.watchPosition(showPosition, showError, {
-          enableHighAccuracy:true
+          enableHighAccuracy: true, // 정확도 향상 옵션
         });
       } else {
         document.getElementById("location").innerHTML = "이 브라우저는 위치 정보를 지원하지 않습니다.";
@@ -75,36 +77,39 @@
     async function showPosition(position) {
       const currentLatitude = position.coords.latitude;
       const currentLongitude = position.coords.longitude;
+      const heading = position.coords.heading; // 기기의 방향 (도 단위)
 
-      // 위치가 변화한 경우에만 업데이트
-      if (currentLatitude === lastLatitude && currentLongitude === lastLongitude) {
-        return;
+      // 위치가 변화한 경우에만 위치 업데이트
+      if (currentLatitude !== lastLatitude || currentLongitude !== lastLongitude) {
+        lastLatitude = currentLatitude;
+        lastLongitude = currentLongitude;
+
+        const newPosition = { lat: currentLatitude, lng: currentLongitude };
+        marker.setPosition(newPosition);
+        map.setCenter(newPosition);
       }
 
-      lastLatitude = currentLatitude;
-      lastLongitude = currentLongitude;
+      // heading 값이 변할 때 마커 회전
+      if (heading !== null && heading !== lastHeading) {
+        lastHeading = heading;
 
-      const data = {
-        "userName": userName,
-        "latitude": currentLatitude,
-        "longitude": currentLongitude
-      };
-      document.getElementById("location").innerHTML =
-        "실시간 위도: " + data.latitude + "<br>실시간 경도: " + data.longitude;
-
-      // 지도에서 마커의 위치를 이미지와 함께 업데이트
-      const newPosition = { lat: currentLatitude, lng: currentLongitude };
-      marker.setPosition(newPosition);
-      map.setCenter(newPosition);
-
-      // 기기의 방향에 따라 마커 회전 (heading 값이 유효할 때만)
-      if (heading !== null) {
         marker.setIcon({
           url: "arrow.png", // 마커 이미지
           scaledSize: new google.maps.Size(50, 50), // 이미지 크기
           rotation: heading // 방향에 따라 회전
         });
+
+        // 화면에 방향 표시
+        document.getElementById("location").innerHTML =
+          "실시간 위도: " + currentLatitude + "<br>실시간 경도: " + currentLongitude + "<br>방향: " + heading;
       }
+
+      const data = {
+        "userName": userName,
+        "latitude": currentLatitude,
+        "longitude": currentLongitude,
+        "heading": heading
+      };
 
       // GPS 정보 서버로 전송
       try {
