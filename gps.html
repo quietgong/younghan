@@ -6,24 +6,60 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>실시간 위치 정보</title>
   <script src="https://cdn.jsdelivr.net/npm/axios@1.7.7/dist/axios.min.js"></script>
+  <!-- Google Maps API -->
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBr4PpRcc8az-paeV336EDFLpFgkB2FQxQ"></script>
+  <style>
+    #map {
+      height: 400px;
+      width: 100%;
+    }
+  </style>
 </head>
 
 <body>
   <h1>실시간 위치 추적</h1>
+  <div id="map">지도 로드 중...</div>
   <p id="location">위치 정보가 여기에 표시됩니다.</p>
+
   <script>
     let watchID;
     let userName;
     let lastLatitude = null;
     let lastLongitude = null;
+    let map, marker;
 
     function getUserName() {
       userName = prompt("닉네임을 입력하세요");
     }
 
+    function initMap(latitude, longitude) {
+      const userPosition = { lat: latitude, lng: longitude };
+
+      // 지도 초기화
+      map = new google.maps.Map(document.getElementById("map"), {
+        zoom: 15,
+        center: userPosition,
+      });
+
+      const icon = {
+        url: "arrow.png", // 원하는 이미지 URL
+        scaledSize: new google.maps.Size(50, 50), // 이미지 크기 설정
+        rotation: 0 // 초기 회전각도
+      };
+
+      marker = new google.maps.Marker({
+        position: userPosition,
+        map: map,
+        icon: icon, // 이미지 사용
+        title: "현재 위치"
+      });
+    }
+
     function startTracking() {
       if (navigator.geolocation) {
-        watchID = navigator.geolocation.watchPosition(showPosition, showError);
+        watchID = navigator.geolocation.watchPosition(showPosition, showError, {
+          enableHighAccuracy:true
+        });
       } else {
         document.getElementById("location").innerHTML = "이 브라우저는 위치 정보를 지원하지 않습니다.";
       }
@@ -40,12 +76,11 @@
       const currentLatitude = position.coords.latitude;
       const currentLongitude = position.coords.longitude;
 
-      // 위도와 경도가 이전 값과 동일한지 확인
+      // 위치가 변화한 경우에만 업데이트
       if (currentLatitude === lastLatitude && currentLongitude === lastLongitude) {
-        return; // 위치 변화가 없으면 API 호출하지 않음
+        return;
       }
 
-      // 이전 위치값을 업데이트
       lastLatitude = currentLatitude;
       lastLongitude = currentLongitude;
 
@@ -53,9 +88,23 @@
         "userName": userName,
         "latitude": currentLatitude,
         "longitude": currentLongitude
-      }
+      };
       document.getElementById("location").innerHTML =
         "실시간 위도: " + data.latitude + "<br>실시간 경도: " + data.longitude;
+
+      // 지도에서 마커의 위치를 이미지와 함께 업데이트
+      const newPosition = { lat: currentLatitude, lng: currentLongitude };
+      marker.setPosition(newPosition);
+      map.setCenter(newPosition);
+
+      // 기기의 방향에 따라 마커 회전 (heading 값이 유효할 때만)
+      if (heading !== null) {
+        marker.setIcon({
+          url: "arrow.png", // 마커 이미지
+          scaledSize: new google.maps.Size(50, 50), // 이미지 크기
+          rotation: heading // 방향에 따라 회전
+        });
+      }
 
       // GPS 정보 서버로 전송
       try {
@@ -84,7 +133,10 @@
     }
 
     getUserName();
-    startTracking();
+    navigator.geolocation.getCurrentPosition(function (position) {
+      initMap(position.coords.latitude, position.coords.longitude);
+      startTracking();
+    }, showError);
   </script>
 </body>
 
