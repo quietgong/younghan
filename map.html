@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Device Orientation API</title>
+  <style>
+    #arrow {
+      width: 100px;
+      height: 100px;
+      transform-origin: 50% 50%;
+      transition: transform 0.3s;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>방향을 감지해 화살표가 움직입니다.</h1>
+  <img id="arrow" src="arrow.png" alt="화살표 이미지" />
+
+  <script>
+    if (window.DeviceOrientationEvent) {
+      window.addEventListener('deviceorientation', function (event) {
+        // alpha: 장치의 회전 방향 (0~360도)
+        const alpha = event.alpha;
+
+        // 화살표 회전
+        const arrow = document.getElementById('arrow');
+        arrow.style.transform = `rotate(${alpha}deg)`;
+      });
+    } else {
+      alert('DeviceOrientation API가 지원되지 않습니다.');
+    }
+  </script>
+</body>
+
+</html>
