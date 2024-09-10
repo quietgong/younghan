@@ -12,26 +12,37 @@
   <p id="orientation"></p>
   <script>
     let lastAlpha = null;
-    
-    const status = document.getElementById("orientation");
-    if (window.DeviceOrientationEvent) {
-      window.addEventListener('deviceorientation', function (event) {
-        // alpha: 장치의 회전 방향 (0~360도)
-        let alpha = event.alpha;
-        if (lastAlpha !== null) {
-          if (Math.abs(alpha - lastAlpha) > 180) {
-            if (alpha > lastAlpha) {
-              alpha -= 360;
-            } else {
-              alpha += 360;
-            }
-          }
-        }
-        status.innerText = `alpha = ${alpha}`;
-      });
-    } else {
-      alert('DeviceOrientation API가 지원되지 않습니다.');
+
+    async function main(){
+      const status = document.getElementById("orientation");
+      let alpha = await getAlpha();
+      status.innerText = `alpha = ${alpha}`;
     }
+    async function getAlpha() {
+        return new Promise((resolve) => {
+          if (window.DeviceOrientationEvent) {
+            window.addEventListener('deviceorientation', (event) => {
+              let alpha = event.alpha;
+              if (lastAlpha !== null) {
+                if (Math.abs(alpha - lastAlpha) > 180) {
+                  if (alpha > lastAlpha) {
+                    alpha -= 360;
+                  } else {
+                    alpha += 360;
+                  }
+                }
+              }
+              lastAlpha = alpha;
+              resolve(alpha);
+            }, { once: true });
+          } else {
+            resolve(null);
+          }
+        });
+      }
+
+    main();
+  
   </script>
 </body>
 
