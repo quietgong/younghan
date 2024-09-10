@@ -5,32 +5,21 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Device Orientation API</title>
-  <style>
-    #arrow {
-      width: 100px;
-      height: 100px;
-      transform-origin: 50% 50%;
-      transition: transform 0.3s;
-    }
-  </style>
 </head>
 
 <body>
-  <h1>방향을 감지해 화살표가 움직입니다.</h1>
-  <img id="arrow" src="arrow.png" alt="화살표 이미지" />
-  <button type="button">
-    <a href="https://plinqer.8thwall.app/proximity">AR 전환</a>
-  </button>
-
+  <h1>방향 감지</h1>
+  <p id="orientation"></p>
   <script>
+    const status = document.getElementById("orientation");
     if (window.DeviceOrientationEvent) {
       window.addEventListener('deviceorientation', function (event) {
         // alpha: 장치의 회전 방향 (0~360도)
+        const absolute = event.absolute;
         const alpha = event.alpha;
-
-        // 화살표 회전
-        const arrow = document.getElementById('arrow');
-        arrow.style.transform = `rotate(${alpha}deg)`;
+        const beta = event.beta;
+        const gamma = event.gamma;
+        status.innerText = `absolute = ${absolute}\nalpha = ${alpha}\nbeta = ${beta}\ngamma=${gamma}`;
       });
     } else {
       alert('DeviceOrientation API가 지원되지 않습니다.');
