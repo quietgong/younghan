@@ -7,27 +7,60 @@
   <title>실시간 위치 정보</title>
   <script src="https://cdn.jsdelivr.net/npm/axios@1.7.7/dist/axios.min.js"></script>
   <!-- Google Maps API -->
-  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBr4PpRcc8az-paeV336EDFLpFgkB2FQxQ"></script>
+  <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBr4PpRcc8az-paeV336EDFLpFgkB2FQxQ"></script>
   <style>
+    /* html과 body에 기본 여백 제거 */
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      /* 스크롤바가 나타나지 않도록 설정 */
+    }
+
     #map {
-      height: 400px;
-      width: 100%;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    /* 버튼을 화면 하단 중앙에 배치 */
+    .center-button {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 10px 20px;
+      background-color: #ff6600;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .custom-marker {
+      width: 50px;
+      height: 50px;
+      background-image: url('arrow.png');
+      /* 원하는 이미지 사용 */
+      background-size: cover;
+      position: absolute;
+      transform-origin: center;
     }
   </style>
 </head>
 
 <body>
-  <h1>실시간 위치 추적</h1>
   <div id="map">지도 로드 중...</div>
-  <p id="location">위치 정보가 여기에 표시됩니다.</p>
+  <button class="center-button" onclick="location.href=`https://plinqer.8thwall.app/proximity`">GO TO AR MODE</button>
 
   <script>
     let userName;
     let lastLatitude = null;
     let lastLongitude = null;
-    let lastHeading = null;
+    let lastAlpha = null;
     let map, marker;
-    let intervalID;
 
     const trackingInterval = 3000;
 
@@ -40,84 +73,118 @@
 
       // 지도 초기화
       map = new google.maps.Map(document.getElementById("map"), {
-        zoom: 15,
+        zoom: 16,
         center: userPosition,
       });
 
-      // 사용자 지정 이미지를 마커로 표시
-      const icon = {
-        url: "arrow.png", // 원하는 이미지 URL
-        scaledSize: new google.maps.Size(50, 50), // 이미지 크기 설정
-      };
+      // 커스텀 마커를 위한 HTML 요소 생성
+      markerElement = document.createElement('div');
+      markerElement.className = 'custom-marker';
 
-      marker = new google.maps.Marker({
-        position: userPosition,
-        map: map,
-        icon: icon, // 이미지 사용
-        title: "현재 위치"
-      });
+      // 커스텀 오버레이 정의
+      class CustomMarker extends google.maps.OverlayView {
+        constructor(position) {
+          super();
+          this.position = position;
+        }
+
+        onAdd() {
+          const panes = this.getPanes();
+          panes.overlayLayer.appendChild(markerElement);
+        }
+
+        draw() {
+          const projection = this.getProjection();
+          const position = projection.fromLatLngToDivPixel(this.position);
+
+          if (position) {
+            markerElement.style.left = position.x + 'px';
+            markerElement.style.top = position.y + 'px';
+          }
+        }
+
+        onRemove() {
+          markerElement.parentNode.removeChild(markerElement);
+        }
+
+        setPosition(position) {
+          this.position = position;
+          this.draw();
+        }
+      }
+
+      // 커스텀 마커 오버레이 추가
+      currentOverlay = new CustomMarker(userPosition);
+      currentOverlay.setMap(map);
+    }
+
+    // 마커 회전 함수 (CSS transform 사용)
+    function rotateMarker(angle) {
+      if (angle !== lastAlpha)
+        markerElement.style.transform = `rotate(${angle}deg)`;
+    }
+
+    // 위치와 헤딩을 업데이트하는 함수
+    function updatePosition(latitude, longitude, heading) {
+      const newPosition = new google.maps.LatLng(latitude, longitude);
+      currentOverlay.setPosition(newPosition);
+      rotateMarker(heading); // 마커 회전
     }
 
     function startTracking() {
-      intervalID = setInterval(() => {
-        navigator.geolocation.getCurrentPosition(showPosition, showError, {
-          enableHighAccuracy: true
-        });
-      }, trackingInterval); // 5초 주기
+      setInterval(() => {
+        navigator.geolocation.getCurrentPosition(currentPos, showError)
+      }, trackingInterval);
     }
 
-    function stopTracking() {
-      if (intervalID) {
-        clearInterval(intervalID);
-        document.getElementById("location").innerHTML = "위치 추적이 중지되었습니다.";
-      }
+    // DeviceOrientationEvent에서 alpha 값을 비동기적으로 가져오는 함수
+    async function getAlpha() {
+      return new Promise((resolve) => {
+        if (window.DeviceOrientationEvent) {
+          // deviceorientation 이벤트가 발생할 때까지 기다림
+          window.addEventListener('deviceorientation', (event) => {
+            resolve(event.alpha); // 이벤트 발생 시 alpha 값 반환
+          }, { once: true }); // 이벤트는 한 번만 처리하도록 설정
+        } else {
+          resolve(null); // DeviceOrientationEvent가 지원되지 않으면 null 반환
+        }
+      });
     }
 
-    async function showPosition(position) {
-      const currentLatitude = position.coords.latitude;
-      const currentLongitude = position.coords.longitude;
-      const heading = position.coords.heading; // 기기의 방향 (도 단위)
-      console.log(`device heading = ${heading}`);
+    async function updatePosition(lat, lng) {
+      if (lat !== lastLatitude || lng !== lastLongitude) {
+        lastLatitude = lat;
+        lastLongitude = lng;
 
-      // 위치가 변화한 경우에만 위치 업데이트
-      if (currentLatitude !== lastLatitude || currentLongitude !== lastLongitude) {
-        lastLatitude = currentLatitude;
-        lastLongitude = currentLongitude;
-
-        const newPosition = { lat: currentLatitude, lng: currentLongitude };
-        marker.setPosition(newPosition);
+        const newPosition = { lat: lat, lng: lng };
+        currentOverlay.setPosition(newPosition);
         map.setCenter(newPosition);
 
         const data = {
           "userName": userName,
-          "latitude": currentLatitude,
-          "longitude": currentLongitude
+          "latitude": lat,
+          "longitude": lng
         };
 
-        // GPS 정보 서버로 전송
-        // try {
-        //   const res = await axios.post("http://115.20.193.140:8888/gps", data);
-        //   console.log(res.data);
-        // } catch (error) {
-        //   console.error(error);
-        // }
+        await savePosition(data); // GPS 정보 서버로 전송
       }
-      document.getElementById("location").innerHTML = "실시간 위도: " + currentLatitude + "<br>실시간 경도: " + currentLongitude + "<br>실시간 헤딩: " + heading;
-      showHeading(heading);
-      
     }
 
-    function showHeading(heading){
-      console.log(`heading = ${heading}`);
-      // heading 값이 변할 때 마커 회전
-      if (heading !== null && heading !== lastHeading) {
-        lastHeading = heading;
+    async function currentPos(pos) {
+      const currentLatitude = pos.coords.latitude;
+      const currentLongitude = pos.coords.longitude;
+      const currentAlpha = await getAlpha();
 
-        marker.setIcon({
-          url: "arrow.png", // 마커 이미지
-          scaledSize: new google.maps.Size(50, 50), // 이미지 크기
-          rotation: heading // 방향에 따라 회전
-        });
+      rotateMarker(currentAlpha);
+      updatePosition(currentLatitude, currentLongitude);
+    }
+
+    async function savePosition(data) {
+      try {
+        const res = await axios.post("http://115.20.193.140:8888/gps", data);
+        console.log(res.data);
+      } catch (error) {
+        console.error(error);
       }
     }
 
@@ -138,7 +205,7 @@
       }
     }
 
-    // getUserName();
+    getUserName(); // 닉네임 입력
     navigator.geolocation.getCurrentPosition(function (position) {
       initMap(position.coords.latitude, position.coords.longitude);
       startTracking();
