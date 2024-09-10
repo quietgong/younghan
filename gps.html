@@ -81,11 +81,7 @@
 
     // 마커 회전 함수 (CSS transform 사용)
     function rotateMarker(alpha) {
-      if (Math.abs(alpha - lastAlpha) > 180) {
-        alpha = alpha > lastAlpha ? alpha - 360 : alpha + 360;
-      }
       markerElement.style.transform = `rotate(${-alpha}deg)`;
-      document.getElementById("alphaBtn").innerText = alpha;
     }
 
     // 위치와 헤딩을 업데이트하는 함수
@@ -105,7 +101,18 @@
         if (window.DeviceOrientationEvent) {
           // deviceorientation 이벤트가 발생할 때까지 기다림
           window.addEventListener('deviceorientation', (event) => {
-            resolve(event.alpha); // 이벤트 발생 시 alpha 값 반환
+            let alpha = event.alpha;
+            if(lastAlpha !== null){
+              if (Math.abs(alpha - previousAlpha) > 180) {
+                if (alpha > previousAlpha) {
+                  alpha -= 360;
+                } else {
+                  alpha += 360;
+                }
+              }
+            }
+            lastAlpha = alpha;
+            resolve(alpha); // 이벤트 발생 시 alpha 값 반환
           }, { once: true }); // 이벤트는 한 번만 처리하도록 설정
         } else {
           resolve(null); // DeviceOrientationEvent가 지원되지 않으면 null 반환
