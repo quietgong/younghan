@@ -133,6 +133,7 @@
       const currentLatitude = pos.coords.latitude;
       const currentLongitude = pos.coords.longitude;
       const currentAlpha = await getAlpha();
+      console.log(`currentAlpha = ${currentAlpha}`);
 
       rotateMarker(currentAlpha);
       updatePosition(currentLatitude, currentLongitude);
