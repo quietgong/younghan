@@ -14,6 +14,7 @@
 <body>
   <div id="map">지도 로드 중...</div>
   <button class="center-button" onclick="location.href=`https://plinqer.8thwall.app/proximity`">GO TO AR MODE</button>
+  <button id="alphaBtn" class="heading-button"></button>
 
   <script>
     let userName;
@@ -22,7 +23,7 @@
     let lastAlpha = null;
     let map, marker;
 
-    const trackingInterval = 3000;
+    const trackingInterval = 1000;
 
     function getUserName() {
       userName = prompt("닉네임을 입력하세요");
@@ -84,6 +85,7 @@
         alpha = alpha > lastAlpha ? alpha - 360 : alpha + 360;
       }
       markerElement.style.transform = `rotate(${-alpha}deg)`;
+      document.getElementById("alphaBtn").innerText = alpha;
     }
 
     // 위치와 헤딩을 업데이트하는 함수
