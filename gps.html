@@ -25,6 +25,29 @@
     let map, marker, currentOverlay;
     const trackingInterval = 1000;
 
+    // 마커 회전 함수 (CSS transform 사용)
+    function rotateMarker(alpha) {
+      const alphaBtn = document.getElementById("alphaBtn");
+      alphaBtn.innerText = alpha;
+      markerElement.style.transform = `rotate(${-alpha}deg)`;
+      lastAlpha = alpha;
+    }
+
+    window.addEventListener('deviceorientation', function (event) {
+      let currentAlpha = event.alpha;
+      if (lastAlpha !== null && lastAlpha !== currentAlpha) {
+        if (Math.abs(currentAlpha - lastAlpha) > 180) {
+          if (currentAlpha > lastAlpha) {
+            currentAlpha -= 360;
+          } else {
+            currentAlpha += 360;
+          }
+        }
+      }
+      console.log(`currentAlpha = ${currentAlpha}`);
+      rotateMarker(currentAlpha);
+    });
+
     // initMap을 전역 함수로 정의
     window.initMap = function () {
       navigator.geolocation.getCurrentPosition(function (position) {
@@ -83,13 +106,6 @@
       }, showError);
     };
 
-    // 마커 회전 함수 (CSS transform 사용)
-    function rotateMarker(alpha) {
-      const alphaBtn = document.getElementById("alphaBtn");
-      alphaBtn.innerText = alpha;
-      markerElement.style.transform = `rotate(${-alpha}deg)`;
-    }
-
     // 위치와 헤딩을 업데이트하는 함수
     function updatePosition(latitude, longitude, heading) {
       const newPosition = new google.maps.LatLng(latitude, longitude);
@@ -102,36 +118,9 @@
       }, trackingInterval);
     }
 
-    async function getAlpha() {
-      return new Promise((resolve) => {
-        if (window.DeviceOrientationEvent) {
-          window.addEventListener('deviceorientation', (event) => {
-            let alpha = event.alpha;
-            // if (lastAlpha !== null) {
-            //   if (Math.abs(alpha - lastAlpha) > 180) {
-            //     if (alpha > lastAlpha) {
-            //       alpha -= 360;
-            //     } else {
-            //       alpha += 360;
-            //     }
-            //   }
-            // }
-            lastAlpha = alpha;
-            resolve(alpha);
-          }, { once: true });
-        } else {
-          resolve(null);
-        }
-      });
-    }
-
     async function currentPos(pos) {
       const currentLatitude = pos.coords.latitude;
       const currentLongitude = pos.coords.longitude;
-      const currentAlpha = await getAlpha();
-      console.log(`currentAlpha = ${currentAlpha}`);
-
-      rotateMarker(currentAlpha);
       updatePosition(currentLatitude, currentLongitude);
     }
 
