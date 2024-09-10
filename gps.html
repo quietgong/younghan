@@ -29,8 +29,8 @@
       userName = prompt("닉네임을 입력하세요");
     }
 
-    function initMap() {
-      // 위치 정보 먼저 가져오기
+    // initMap을 전역 함수로 정의
+    window.initMap = function () {
       navigator.geolocation.getCurrentPosition(function (position) {
         const latitude = position.coords.latitude;
         const longitude = position.coords.longitude;
@@ -85,7 +85,7 @@
         // 트래킹 시작
         startTracking();
       }, showError);
-    }
+    };
 
     // 마커 회전 함수 (CSS transform 사용)
     function rotateMarker(alpha) {
@@ -121,7 +121,7 @@
               }
             }
             lastAlpha = alpha;
-            resolve(parseInt(alpha));
+            resolve(alpha);
           }, { once: true });
         } else {
           resolve(null);
