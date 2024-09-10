@@ -1,0 +1,38 @@
+/* html과 body에 기본 여백 제거 */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  /* 스크롤바가 나타나지 않도록 설정 */
+}
+
+#map {
+  height: 100vh;
+  width: 100vw;
+}
+
+/* 버튼을 화면 하단 중앙에 배치 */
+.center-button {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px 20px;
+  background-color: #ff6600;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.custom-marker {
+  width: 50px;
+  height: 50px;
+  background-image: url('arrow.png');
+  /* 원하는 이미지 사용 */
+  background-size: cover;
+  position: absolute;
+  transform-origin: center;
+}

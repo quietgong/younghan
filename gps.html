@@ -7,48 +7,8 @@
   <title>실시간 위치 정보</title>
   <script src="https://cdn.jsdelivr.net/npm/axios@1.7.7/dist/axios.min.js"></script>
   <!-- Google Maps API -->
-  <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBr4PpRcc8az-paeV336EDFLpFgkB2FQxQ"></script>
-  <style>
-    /* html과 body에 기본 여백 제거 */
-    html,
-    body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      overflow: hidden;
-      /* 스크롤바가 나타나지 않도록 설정 */
-    }
-
-    #map {
-      height: 100vh;
-      width: 100vw;
-    }
-
-    /* 버튼을 화면 하단 중앙에 배치 */
-    .center-button {
-      position: absolute;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      padding: 10px 20px;
-      background-color: #ff6600;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    .custom-marker {
-      width: 50px;
-      height: 50px;
-      background-image: url('arrow.png');
-      /* 원하는 이미지 사용 */
-      background-size: cover;
-      position: absolute;
-      transform-origin: center;
-    }
-  </style>
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBr4PpRcc8az-paeV336EDFLpFgkB2FQxQ"></script>
+  <link rel="stylesheet" href="gps.css">
 </head>
 
 <body>
@@ -119,24 +79,17 @@
     }
 
     // 마커 회전 함수 (CSS transform 사용)
-    function rotateMarker(angle) {
-      if (angle !== lastAlpha){
-        if (Math.abs(alpha - lastAlpha) > 180) {
-          if (alpha > previousAlpha) {
-            alpha -= 360;
-          } else {
-            alpha += 360;
-          }
-        }
-        markerElement.style.transform = `rotate(${angle}deg)`;
+    function rotateMarker(alpha) {
+      if (Math.abs(alpha - lastAlpha) > 180) {
+        alpha = alpha > lastAlpha ? alpha - 360 : alpha + 360;
       }
+      markerElement.style.transform = `rotate(${-alpha}deg)`;
     }
 
     // 위치와 헤딩을 업데이트하는 함수
     function updatePosition(latitude, longitude, heading) {
       const newPosition = new google.maps.LatLng(latitude, longitude);
       currentOverlay.setPosition(newPosition);
-      rotateMarker(heading); // 마커 회전
     }
 
     function startTracking() {
@@ -145,7 +98,6 @@
       }, trackingInterval);
     }
 
-    // DeviceOrientationEvent에서 alpha 값을 비동기적으로 가져오는 함수
     async function getAlpha() {
       return new Promise((resolve) => {
         if (window.DeviceOrientationEvent) {
@@ -173,8 +125,7 @@
           "latitude": lat,
           "longitude": lng
         };
-
-        await savePosition(data); // GPS 정보 서버로 전송
+        // await savePosition(data); // GPS 정보 서버로 전송
       }
     }
 
@@ -213,7 +164,6 @@
       }
     }
 
-    getUserName(); // 닉네임 입력
     navigator.geolocation.getCurrentPosition(function (position) {
       initMap(position.coords.latitude, position.coords.longitude);
       startTracking();
