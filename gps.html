@@ -81,6 +81,8 @@
 
     // 마커 회전 함수 (CSS transform 사용)
     function rotateMarker(alpha) {
+      const alphaBtn = document.getElementById("alphaBtn");
+      alphaBtn.innerText = alpha;
       markerElement.style.transform = `rotate(${-alpha}deg)`;
     }
 
@@ -103,8 +105,8 @@
           window.addEventListener('deviceorientation', (event) => {
             let alpha = event.alpha;
             if(lastAlpha !== null){
-              if (Math.abs(alpha - previousAlpha) > 180) {
-                if (alpha > previousAlpha) {
+              if (Math.abs(alpha - lastAlpha) > 180) {
+                if (alpha > lastAlpha) {
                   alpha -= 360;
                 } else {
                   alpha += 360;
