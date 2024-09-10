@@ -11,6 +11,8 @@
   <h1>방향 감지</h1>
   <p id="orientation"></p>
   <script>
+    let lastAlpha = null;
+    
     const status = document.getElementById("orientation");
     if (window.DeviceOrientationEvent) {
       window.addEventListener('deviceorientation', function (event) {
