@@ -15,11 +15,17 @@
     if (window.DeviceOrientationEvent) {
       window.addEventListener('deviceorientation', function (event) {
         // alpha: 장치의 회전 방향 (0~360도)
-        const absolute = event.absolute;
-        const alpha = event.alpha;
-        const beta = event.beta;
-        const gamma = event.gamma;
-        status.innerText = `absolute = ${absolute}\nalpha = ${alpha}\nbeta = ${beta}\ngamma=${gamma}`;
+        let alpha = event.alpha;
+        if (lastAlpha !== null) {
+          if (Math.abs(alpha - lastAlpha) > 180) {
+            if (alpha > lastAlpha) {
+              alpha -= 360;
+            } else {
+              alpha += 360;
+            }
+          }
+        }
+        status.innerText = `alpha = ${alpha}`;
       });
     } else {
       alert('DeviceOrientation API가 지원되지 않습니다.');

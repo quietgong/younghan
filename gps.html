@@ -25,10 +25,6 @@
     let map, marker, currentOverlay;
     const trackingInterval = 1000;
 
-    function getUserName() {
-      userName = prompt("닉네임을 입력하세요");
-    }
-
     // initMap을 전역 함수로 정의
     window.initMap = function () {
       navigator.geolocation.getCurrentPosition(function (position) {
