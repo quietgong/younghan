@@ -120,8 +120,16 @@
 
     // 마커 회전 함수 (CSS transform 사용)
     function rotateMarker(angle) {
-      if (angle !== lastAlpha)
+      if (angle !== lastAlpha){
+        if (Math.abs(alpha - lastAlpha) > 180) {
+          if (alpha > previousAlpha) {
+            alpha -= 360;
+          } else {
+            alpha += 360;
+          }
+        }
         markerElement.style.transform = `rotate(${angle}deg)`;
+      }
     }
 
     // 위치와 헤딩을 업데이트하는 함수
