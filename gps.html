@@ -111,15 +111,15 @@
         if (window.DeviceOrientationEvent) {
           window.addEventListener('deviceorientation', (event) => {
             let alpha = event.alpha;
-            if (lastAlpha !== null) {
-              if (Math.abs(alpha - lastAlpha) > 180) {
-                if (alpha > lastAlpha) {
-                  alpha -= 360;
-                } else {
-                  alpha += 360;
-                }
-              }
-            }
+            // if (lastAlpha !== null) {
+            //   if (Math.abs(alpha - lastAlpha) > 180) {
+            //     if (alpha > lastAlpha) {
+            //       alpha -= 360;
+            //     } else {
+            //       alpha += 360;
+            //     }
+            //   }
+            // }
             lastAlpha = alpha;
             resolve(alpha);
           }, { once: true });
