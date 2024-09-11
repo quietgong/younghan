@@ -14,7 +14,7 @@ body {
 }
 
 /* 버튼을 화면 하단 중앙에 배치 */
-.center-button {
+.capture-button {
   position: absolute;
   bottom: 20px;
   left: 50%;

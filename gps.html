@@ -14,14 +14,52 @@
 
 <body>
   <div id="map">지도 로드 중...</div>
-  <button class="center-button" onclick="location.href='https://plinqer.8thwall.app/proximity'">GO TO AR MODE</button>
+  <button class="capture-button" id="captureBtn">지도를 캡처</button>
 
   <script>
     let userName;
+    let centerPosition = { "lat": 36.64004168838409, "lng": 127.44053371164425 };
     let lastLatitude = null;
     let lastLongitude = null;
     let lastAlpha = null;
     let map, marker, currentOverlay;
+    let markers = [];
+    const locations = [
+      { lat: 36.64056252049627, lng: 127.44110770434744 },
+      { lat: 36.639964208926024, lng: 127.44255073273207 },
+      { lat: 36.64042047572398, lng: 127.43995971894105 },
+      { lat: 36.64056252049627, lng: 127.44110770434744 },
+      { lat: 36.639964208926024, lng: 127.44255073273207 },
+      { lat: 36.64042047572398, lng: 127.43995971894105 },
+      { lat: 36.64056252049627, lng: 127.44110770434744 },
+      { lat: 36.639964208926024, lng: 127.44255073273207 },
+      { lat: 36.64042047572398, lng: 127.43995971894105 },
+      { lat: 36.64056252049627, lng: 127.44110770434744 },
+      { lat: 36.639964208926024, lng: 127.44255073273207 },
+      { lat: 36.64042047572398, lng: 127.43995971894105 },
+      { lat: 36.64056252049627, lng: 127.44110770434744 },
+      { lat: 36.639964208926024, lng: 127.44255073273207 },
+      { lat: 36.64042047572398, lng: 127.43995971894105 },
+      { lat: 36.64056252049627, lng: 127.44110770434744 },
+      { lat: 36.639964208926024, lng: 127.44255073273207 },
+      { lat: 36.64042047572398, lng: 127.43995971894105 },
+      { lat: 36.64056252049627, lng: 127.44110770434744 },
+      { lat: 36.639964208926024, lng: 127.44255073273207 },
+      { lat: 36.64042047572398, lng: 127.43995971894105 },
+      { lat: 36.64056252049627, lng: 127.44110770434744 },
+      { lat: 36.639964208926024, lng: 127.44255073273207 },
+      { lat: 36.64042047572398, lng: 127.43995971894105 },
+      { lat: 36.64056252049627, lng: 127.44110770434744 },
+      { lat: 36.639964208926024, lng: 127.44255073273207 },
+      { lat: 36.64042047572398, lng: 127.43995971894105 },
+      { lat: 36.64056252049627, lng: 127.44110770434744 },
+      { lat: 36.639964208926024, lng: 127.44255073273207 },
+      { lat: 36.64042047572398, lng: 127.43995971894105 },
+      { lat: 36.64056252049627, lng: 127.44110770434744 },
+      { lat: 36.639964208926024, lng: 127.44255073273207 },
+      { lat: 36.64042047572398, lng: 127.43995971894105 },
+    ];
+
     const trackingInterval = 1000;
 
     function showError(error) {
@@ -113,6 +151,15 @@
         currentOverlay = new CustomMarker(userPosition);
         currentOverlay.setMap(map);
 
+        // 좌표값들을 지도에 마커로 추가
+        locations.forEach((location) => {
+          const marker = new google.maps.Marker({
+            position: location,
+            map: map
+          });
+          markers.push(marker);
+        });
+
         // 트래킹 시작
         startTracking();
       }, showError);
@@ -126,7 +173,7 @@
 
     async function savePosition(data) {
       try {
-        const res = await axios.post("http://115.20.193.140:8888/gps", data);
+        const res = await axios.post("https://115.20.193.140:8888/gps", data);
         console.log(res.data);
       } catch (error) {
         console.error(error);
@@ -152,6 +199,19 @@
       }
     }
 
+    async function captureMap() {
+      // Static Maps API URL 생성
+      let staticMapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${centerPosition.lat},${centerPosition.lng}&zoom=16&size=640x640&key=AIzaSyBr4PpRcc8az-paeV336EDFLpFgkB2FQxQ`;
+
+      // 마커들을 Static Map URL에 추가
+      markers.forEach(marker => {
+        const position = marker.getPosition();
+        const markerString = `&markers=icon:https://plinqer-dev.s3.ap-northeast-2.amazonaws.com/arrow.png%7Clabel:S%7C${position.lat()},${position.lng()}`;
+        staticMapUrl += markerString;
+      });
+      console.log(staticMapUrl);
+    }
+
     async function currentPos(pos) {
       const currentLatitude = pos.coords.latitude;
       const currentLongitude = pos.coords.longitude;
@@ -159,6 +219,8 @@
       currentOverlay.setPosition(newPosition);
       await updatePosition(currentLatitude, currentLongitude);
     }
+    // 캡처 버튼 클릭 이벤트
+    document.getElementById('captureBtn').addEventListener('click', captureMap)
   </script>
 </body>
 
