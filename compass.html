@@ -1,1 +1,41 @@
-http://127.0.0.1:3000/younghan/compass.html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <h1 id="text">Waiting for permission...</h1>
+  <script>
+    function handleOrientation(event) {
+      let currentAlpha = event.alpha;
+      document.getElementById("text").innerText = currentAlpha;
+    }
+
+    // 권한 요청
+    function requestPermission() {
+      if (DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission === 'function') {
+        DeviceOrientationEvent.requestPermission()
+          .then(permissionState => {
+            if (permissionState === 'granted') {
+              window.addEventListener('deviceorientation', handleOrientation);
+            } else {
+              document.getElementById("text").innerText = 'Permission denied';
+            }
+          })
+          .catch(console.error);
+      } else {
+        // 권한 요청이 필요 없는 경우 바로 이벤트 추가
+        window.addEventListener('deviceorientation', handleOrientation);
+      }
+    }
+
+    // 사용자 상호작용 후 권한 요청
+    document.body.addEventListener('click', requestPermission);
+  </script>
+</body>
+
+</html>
