@@ -195,7 +195,6 @@
           "longitude": lng
         };
 
-        await savePosition(data); // GPS 정보 서버로 전송
       }
     }
 
@@ -206,10 +205,11 @@
       // 마커들을 Static Map URL에 추가
       markers.forEach(marker => {
         const position = marker.getPosition();
-        const markerString = `&markers=icon:https://plinqer-dev.s3.ap-northeast-2.amazonaws.com/arrow.png%7Clabel:S%7C${position.lat()},${position.lng()}`;
+        const markerString = `&markers=icon:https://plinqer-dev.s3.ap-northeast-2.amazonaws.com/arrow_tr2.png%7Clabel:S%7C${position.lat()},${position.lng()}`;
         staticMapUrl += markerString;
       });
       console.log(staticMapUrl);
+      window.open(staticMapUrl);
     }
 
     async function currentPos(pos) {
